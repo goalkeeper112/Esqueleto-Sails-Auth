@@ -1,0 +1,2 @@
+# esqueleto
+### a Sails application
