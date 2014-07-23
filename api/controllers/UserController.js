@@ -18,20 +18,14 @@
 module.exports = {
 
   'new': function(req, res){
-  		res.locals.flas = _.clone(req.session.flash);
   		res.view();
-  		req.session.flash = {};
   },
 
   create: function(req, res, next){
   	User.create(req.params.all(), function UserCreated(err, user){
   		if(err){
-  			console.log(err);
-  			req,session.flash = {
-  				err: err
-  			}
-  			
-  			return res.redirect('user/nex')
+  			res.send(err);
+  			return res.redirect('user/new');
   		}
   		res.json(user);
   		res.session.flash = {};
