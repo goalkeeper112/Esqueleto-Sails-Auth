@@ -22,15 +22,14 @@ module.exports = {
   },
 
   create: function(req, res, next){
-  	User.create(req.params.all(), function UserCreated(err, user){
+  	User.create( req.params.all(), function UserCreated(err, user){
   		if(err){
-  			res.send(err);
-  			return res.redirect('user/new');
+  			return next(err);
   		}
+
   		res.json(user);
-  		res.session.flash = {};
   	});
-  },
+  }
 
   /*read: function(req, res, next){
   	User.findOne(req.params.all(), function UserRead(err, user){
@@ -43,10 +42,10 @@ module.exports = {
   			}
   		}
   	});
-  },*/
+  },
 
   login: function(req, res){
   	res.view();
-  }
+  }*/
 
 };
