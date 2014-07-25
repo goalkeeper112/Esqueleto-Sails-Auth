@@ -1,25 +1,7 @@
-/**
- * UserController
- *
- * @module      :: Controller
- * @description	:: A set of functions called `actions`.
- *
- *                 Actions contain code telling Sails how to respond to a certain type of request.
- *                 (i.e. do stuff, then send some JSON, show an HTML page, or redirect to another URL)
- *
- *                 You can configure the blueprint URLs which trigger these actions (`config/controllers.js`)
- *                 and/or override them with custom routes (`config/routes.js`)
- *
- *                 NOTE: The code you write here supports both HTTP and Socket.io automatically.
- *
- * @docs        :: http://sailsjs.org/#!documentation/controllers
- */
+var bcrypt = require("bcrypt");
+  
 
 module.exports = {
-
-  'new': function(req, res){
-  		res.view();
-  },
 
   create: function(req, res, next){
   	User.create( req.params.all(), function UserCreated(err, user){
@@ -27,25 +9,71 @@ module.exports = {
   			return next(err);
   		}
 
-  		res.json(user);
-  	});
-  }
-
-  /*read: function(req, res, next){
-  	User.findOne(req.params.all(), function UserRead(err, user){
-  		if(err){
-  			return next(null, err);
-  		}else{
-  			if(user.username == "goalkeeper112"){
-  				console.log("a accesado goalkeeper112");
-  				res.redirect('/');
-  			}
-  		}
+  		res.send({
+  			email: user,
+  			password: user.password
+  		});
   	});
   },
 
-  login: function(req, res){
-  	res.view();
-  }*/
+  view: function(req, res, next){
+  	User.findOne(req.param('id'), function foundUser(err, user){
+  		if(err){
+  			return next(err);
+  		}
+  		if(!user){
+  			return next();
+  		}
+  		res.view({
+  			user: user
+  		});
+  	});
+  },
+
+  delete: function(req, res, next){
+  	User.findOne(req.param('id'), function(err, user){
+  		if(err){
+  			return next(err);
+  		}
+  		if(!user){
+  			return next('No existe ese usuario');
+  		}
+
+  		User.destroy(req.param('id'), function userDestroyed(err){
+  			if(err){
+  				return next(err);
+  			}
+  		});
+
+  		res.redirect('/user');
+  	});
+  },
+
+  login: function(req, res, next){
+  	User.findOneByEmail(req.param('email')).done(function(err, user){
+  		if(err){
+  			return next(err);
+  		}
+
+  		if(user){
+  			bcrypt.compare(req.param('password'), user.password, function(err, match){
+  				if(err){
+  					return next(err);
+  				}
+  				if(match){
+                req.session.user = user.id;
+      					req.session.authenticated = true;
+      					res.json(user);
+      					console.log(user);
+  				} else{
+  					return res.send("Contraseña incorrecta");
+  				}
+  			});
+  		}else{
+  			var email = req.param('email');
+  			return res.send("este email: "+email+" no es valido"); 
+  		}
+  	});
+  }
 
 };
