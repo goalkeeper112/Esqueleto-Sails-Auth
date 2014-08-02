@@ -19,7 +19,6 @@ module.exports = {
   	toJSON: function(){
   		var obj = this.toObject();
   		delete obj.password;
-  		delete obj.identifier;
   		return obj;
   	}
   },
@@ -38,20 +37,6 @@ module.exports = {
   		});
   	});
 
-
-  	/*user.identifier = user.email;
-  	
-  	bcrypt.genSalt(10, function(err, salt){
-  		bcrypt.hash(user.identifier, salt, function(err, hash){
-  			if(err){
-  				console.log(err);
-  				return cb(err);
-  			} else{
-  				user.identifier = hash;
-  				return cb(null, user);
-  			}
-  		});
-  	});*/
   }
 
 };
